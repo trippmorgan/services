@@ -1,0 +1,50 @@
+# The 'version' tag is optional in modern Docker Compose
+# version: '3.8' 
+
+services:
+  # Service 1: The PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: central_postgres_db
+    restart: unless-stopped
+    environment:
+      # These variables are read from the .env file
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - services_network
+
+  # Service 2: The Dragon Dictation Pro AI Service
+  dragon_dictation:
+    build:
+      context: ./dragon_dictation_pro
+    container_name: dragon_ai_service
+    restart: unless-stopped
+    environment:
+      # This variable is correctly read from the .env file
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+    ports:
+      - "5005:5005"
+    networks:
+      - services_network
+    # This section grants the container access to the host's GPU(s)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  services_network:
+    driver: bridge

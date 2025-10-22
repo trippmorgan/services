@@ -1,0 +1,8 @@
+
+# backend/requirements.txt
+ctranslate2
+flask
+waitress
+faster-whisper
+google-generativeai
+requests==2.31.0

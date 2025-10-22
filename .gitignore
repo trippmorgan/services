@@ -1,0 +1,28 @@
+# Environment files
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.env/
+.venv/
+
+# Logs
+logs/
+*.log
+
+# Docker
+*.pid
+*.pid.lock
+
+# Node
+node_modules/
+dist/
+build/
+
+# System files
+.DS_Store
+Thumbs.db
