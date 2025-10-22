@@ -49,6 +49,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # This should come after pip installs for better caching
 COPY config ./config
 
+# Create metrics directory
+RUN mkdir -p /app/metrics
+
 # Copy application code last (changes most frequently)
 COPY dragon_gpu_server.py .
 
@@ -59,10 +62,10 @@ RUN useradd -m -u 1000 dragon && \
 # Switch to non-root user
 USER dragon
 
-# Health check - verifies server is responding
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python3 -c "import requests; requests.get('http://localhost:5005/', timeout=5)" || exit 1
-
+# Health check with enhanced status
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python3 -c "import requests; r=requests.get('http://localhost:5005/', timeout=5); exit(0 if r.json()['gemini_enabled'] else 1)" || exit 1
+    
 # Expose the port
 EXPOSE 5005
 
